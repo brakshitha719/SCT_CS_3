@@ -1,0 +1,132 @@
+import java.util.Scanner;
+
+public class PasswordStrength {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("===== PASSWORD RULES =====");
+        System.out.println("1) Must be at least 8 characters long");
+        System.out.println("2) Must contain at least one uppercase letter (A-Z)");
+        System.out.println("3) Must contain at least one lowercase letter (a-z)");
+        System.out.println("4) Must contain at least one digit (0-9)");
+        System.out.println("5) Must contain at least one special character (!@#$%^&* etc.)");
+        System.out.println("_______________________________________________\n");
+
+        System.out.print("Enter your password: ");
+        String password = sc.nextLine();
+
+        password = password.trim();
+
+        boolean debug = false; 
+
+        int score = calculateStrength(password, debug);
+
+        System.out.println("\nPassword Strength Score: " + score + "/5");
+        System.out.println("Password Rating: " + getRating(score));
+
+        System.out.println("\n===== PASSWORD FEEDBACK =====");
+        showMistakes(password);
+    }
+
+    public static int calculateStrength(String password, boolean debug) {
+        boolean hasUpper = false;
+        boolean hasLower = false;
+        boolean hasDigit = false;
+        boolean hasSpecial = false;
+        boolean lengthOK = password.length() >= 8;
+
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+            if (debug) {
+                System.out.printf("char[%d] = '%c' (code %d)%n", i, c, (int) c);
+            }
+            if (Character.isUpperCase(c)) hasUpper = true;
+            else if (Character.isLowerCase(c)) hasLower = true;
+            else if (Character.isDigit(c)) hasDigit = true;
+            else {
+                if (!Character.isWhitespace(c)) hasSpecial = true;
+            }
+        }
+
+        int score = 0;
+        if (lengthOK) score++;
+        if (hasUpper) score++;
+        if (hasLower) score++;
+        if (hasDigit) score++;
+        if (hasSpecial) score++;
+
+        if (debug) {
+            System.out.println("\nDEBUG SUMMARY:");
+            System.out.println("lengthOK = " + lengthOK);
+            System.out.println("hasUpper = " + hasUpper);
+            System.out.println("hasLower = " + hasLower);
+            System.out.println("hasDigit = " + hasDigit);
+            System.out.println("hasSpecial = " + hasSpecial);
+        }
+
+        return score;
+    }
+
+    public static void showMistakes(String password) {
+        boolean ok = true;
+
+        if (password.length() < 8) {
+            System.out.println("-> Password must be at least 8 characters long");
+            ok = false;
+        } else {
+            System.out.println("-> Length rule satisfied");
+        }
+
+        boolean hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+            if (Character.isUpperCase(c)) hasUpper = true;
+            else if (Character.isLowerCase(c)) hasLower = true;
+            else if (Character.isDigit(c)) hasDigit = true;
+            else if (!Character.isWhitespace(c)) hasSpecial = true;
+        }
+
+        if (!hasUpper) {
+            System.out.println("-> Missing uppercase letter (A-Z)");
+            ok = false;
+        } else {
+            System.out.println("-> Uppercase rule satisfied");
+        }
+
+        if (!hasLower) {
+            System.out.println("-> Missing lowercase letter (a-z)");
+            ok = false;
+        } else {
+            System.out.println("-> Lowercase rule satisfied");
+        }
+
+        if (!hasDigit) {
+            System.out.println("-> Missing digit (0-9)");
+            ok = false;
+        } else {
+            System.out.println("-> Digit rule satisfied");
+        }
+
+        if (!hasSpecial) {
+            System.out.println("-> Missing special character (!@#$%^&* etc.)");
+            ok = false;
+        } else {
+            System.out.println("-> Special character rule satisfied");
+        }
+
+        if (ok) {
+            System.out.println("-> Your password satisfies all security rules!");
+        }
+    }
+
+    public static String getRating(int score) {
+        switch (score) {
+            case 5: return "Very Strong";
+            case 4: return "Strong";
+            case 3: return "Moderate";
+            case 2: return "Weak";
+            default: return "Very Weak";
+        }
+    }
+}
